@@ -1,29 +1,17 @@
-//New code aclop repository
-const { Client, Buttons, List, MessageMedia, LocalAuth } = require('whatsapp-web.js');
-const qrcode = require('qrcode-terminal')
-
-const commander = require('commander')
-const axios = require('axios')
-
-const log_debug = options.debug ? console.log : () => { }
-const puppeteerConfig = !options.chrome ? { executablePath: "/usr/bin/chromium-browser", args: ['--no-sandbox'] } : { executablePath: "/usr/bin/chromium-browser", args: ['--no-sandbox'] }
-const browser = await puppeteer.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox'] });
-
-// Inicialize WhatsApp Web client
+//tutorial hospedagem https://www.youtube.com/watch?v=6FOkWIGFNzI
+// aws https://sa-east-1.console.aws.amazon.com/ec2/home?region=sa-east-1#Home:
+// ---------------------------------------------------------------------------------------------------------
+const qrcode = require('qrcode-terminal');
+const { Client, Buttons, List, MessageMedia, LocalAuth } = require('whatsapp-web.js'); // MudanÃ§a Buttons
+//const client = new Client();
 const client = new Client({
     authStrategy: new LocalAuth(),
-    ffmpegPath,
-    puppeteer: puppeteerConfig,
-    webVersionCache: {
-        type: "remote",
-        remotePath:
-            "https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/2.2412.54.html",
-    },
-})
+});
 
+// serviÃ§o de leitura do qr code
 client.on('qr', qr => {
-    qrcode.generate(qr, { small: true })
-})
+    qrcode.generate(qr, {small: true});
+});
 
 //cliente autenticado
 client.on('authenticated', () => {
@@ -35,7 +23,7 @@ client.on('ready', () => {
     console.log('Sucesso! WhatsApp conectado e rodando.');
 });
 
-//vari�vel permanentes
+//variï¿½vel permanentes
 let VPessoa;
 let VCNPJ;
 let VDireito;
@@ -46,38 +34,47 @@ let VIA;
 let VPJ;
 let VMI;
 
-const delay = ms => new Promise(res => setTimeout(res, ms)); // Função que usamos para criar o delay entre uma ação e outra
+// E inicializa tudo 
+client.initialize();
 
-// Funil de mensagens 
+const delay = ms => new Promise(res => setTimeout(res, ms)); // FunÃ§Ã£o que usamos para criar o delay entre uma aÃ§Ã£o e outra
+
+//tutorial
+//https://jagad.dev/posts/how-to-create-a-whatsapp-bot-with-node-js
+//https://stackoverflow.com/questions/63803078/checking-message-length-with-discord-js
+
+
+// Funil
 client.on('message', async msg => {
+
     //Inicio
-   
-    // if ( msg.body.match(/(menu|Menu|dia|tarde|noite|oi|Oi|Olá|olá|ola|Ola|Oi|O|o|oi|ei|Ei|Eu|eu|Solicito|Bom|bom|boa|oie|Boa|Hi|hi)/i) && msg.from.endsWith('@c.us')) {
-    if (VIA != 99 && msg.body != '' && msg.body.length >= 4 && msg.body != 'não' && msg.body.length !== 14 && msg.body.length !== 18 && msg.from.endsWith('@c.us')) {
+   // if ( msg.body.match(/(menu|Menu|dia|tarde|noite|oi|Oi|OlÃ¡|olÃ¡|ola|Ola|Oi|O|o|oi|ei|Ei|Eu|eu|Solicito|Bom|bom|boa|oie|Boa|Hi|hi)/i) && msg.from.endsWith('@c.us')) {
+    if (VIA != 99 && msg.body != '' && msg.body.length >= 4 && msg.body != 'nÃ£o' && msg.body.length !== 14 && msg.body.length !== 18 &&  msg.from.endsWith('@c.us')) {
         const chat = await msg.getChat();
 
         await delay(3000); //delay de 3 segundos
-        await chat.sendStateTyping(); // Simulando Digitação
+        await chat.sendStateTyping(); // Simulando DigitaÃ§Ã£o
         await delay(3000); //Delay de 3000 milisegundos mais conhecido como 3 segundos
         const contact = await msg.getContact(); //Pegando o contato
         const name = contact.pushname; //Pegando o nome do contato
-        await client.sendMessage(msg.from, 'Olá! ' + name.split(" ")[0] + ' Sou o *Assistente Virtual VioH.* Como posso ajudá-lo? \nPor favor, digite uma das opções abaixo:\n\n Digite (*PF*) Pessoa Física\n Digite (*PJ*) Pessoa Jurídica\n Digite (*SC*) Serviços de contabilidade\n Digite (*STI*) Suporte Técnico em TI\nDigite *00* - Quem é a VioH?');
+        await client.sendMessage(msg.from, 'OlÃ¡! ' + name.split(" ")[0] + ' Sou o *Assistente Virtual VioH.* Como posso ajudÃ¡-lo? \nPor favor, digite uma das opÃ§Ãµes abaixo:\n\n Digite (*PF*) Pessoa FÃ­sica\n Digite (*PJ*) Pessoa JurÃ­dica\n Digite (*SC*) ServiÃ§os de contabilidade\n Digite (*STI*) Suporte TÃ©cnico em TI\nDigite *00* - Quem Ã© a VioH?');
 
+        
     }
 
-    //Por favor digite o seu CNPJ
-    if (msg.body !== null && msg.body === '0' && msg.from.endsWith('@c.us')) {
+     //Por favor digite o seu CNPJ
+     if (msg.body !== null && msg.body === '0' && msg.from.endsWith('@c.us')) {
 
         const chat = await msg.getChat();
 
         VIA = '';
 
         await delay(3000); //delay de 3 segundos
-        await chat.sendStateTyping(); // Simulando Digitação
+        await chat.sendStateTyping(); // Simulando DigitaÃ§Ã£o
         await delay(3000); //Delay de 3000 milisegundos mais conhecido como 3 segundos
         const contact = await msg.getContact(); //Pegando o contato
         const name = contact.pushname; //Pegando o nome do contato
-        await client.sendMessage(msg.from, 'Olá! ' + name.split(" ")[0] + ' Sou o *Assistente Virtual VioH.* Como posso ajudá-lo? \nPor favor, digite uma das opções abaixo:\n\n Digite (*PF*) Pessoa Física\n Digite (*PJ*) Pessoa Jurídica\n Digite (*SC*) Serviços de contabilidade\n Digite (*STI*) Suporte Técnico em TI\nDigite *00* - Quem é a VioH?');
+        await client.sendMessage(msg.from, 'OlÃ¡! ' + name.split(" ")[0] + ' Sou o *Assistente Virtual VioH.* Como posso ajudÃ¡-lo? \nPor favor, digite uma das opÃ§Ãµes abaixo:\n\n Digite (*PF*) Pessoa FÃ­sica\n Digite (*PJ*) Pessoa JurÃ­dica\n Digite (*SC*) ServiÃ§os de contabilidade\n Digite (*STI*) Suporte TÃ©cnico em TI\nDigite *00* - Quem Ã© a VioH?');
     }
 
     //Por favor digite o seu CNPJ
@@ -86,9 +83,9 @@ client.on('message', async msg => {
         const chat = await msg.getChat();
 
         await delay(3000); //delay de 3 segundos
-        await chat.sendStateTyping(); // Simulando DigitaÃ§Ã£o
+        await chat.sendStateTyping(); // Simulando DigitaÃƒÂ§ÃƒÂ£o
         await delay(3000);
-        await client.sendMessage(msg.from, 'Vioh significa Virtual operações HoppeDSH. A HoppeDSM é uma empresa de serviços de tecnologia da informação (T.I)  que trabalha com vários ramos de atividades como desenvolvimento de softwares, venda de produtos, prestação de outros serviços como consultoria, serviços contábeis a  empresas...\n\nPossuímos ainda empresas auxiliares com outros tipos de atividades você pode visitar nosso site em https://vioh.com.br/ ou por contato@vioh.com.br\n\nAgradecemos o seu contato! Você está sendo atendido pelo assistente  criado pela própria Vioh.\n\nConheça também nossa Inteligência Artificial *IA*, digitando *99*. ');
+        await client.sendMessage(msg.from, 'Vioh significa Virtual operaÃ§Ãµes HoppeDSH. A HoppeDSM Ã© uma empresa de serviÃ§os de tecnologia da informaÃ§Ã£o (T.I)  que trabalha com vÃ¡rios ramos de atividades como desenvolvimento de softwares, venda de produtos, prestaÃ§Ã£o de outros serviÃ§os como consultoria, serviÃ§os contÃ¡beis a  empresas...\n\nPossuÃ­mos ainda empresas auxiliares com outros tipos de atividades vocÃª pode visitar nosso site em https://vioh.com.br/ ou por contato@vioh.com.br\n\nAgradecemos o seu contato! VocÃª estÃ¡ sendo atendido pelo assistente  criado pela prÃ³pria Vioh.\n\nConheÃ§a tambÃ©m nossa InteligÃªncia Artificial *IA*, digitando *99*. ');
 
     }
 
@@ -98,15 +95,15 @@ client.on('message', async msg => {
 
         const chat = await msg.getChat();
 
-        VPessoa = 'Pessoa Física';
+        VPessoa = 'Pessoa FÃ­sica';
 
         await delay(3000); //delay de 3 segundos
-        await chat.sendStateTyping(); // Simulando Digitação
+        await chat.sendStateTyping(); // Simulando DigitaÃ§Ã£o
         await delay(3000); //Delay de 3000 milisegundos mais conhecido como 3 segundos
         const contact = await msg.getContact(); //Pegando o contato
         const name = contact.pushname; //Pegando o nome do contato
-        await client.sendMessage(msg.from, 'Olá! ' + name.split(" ")[0] + ' Por favor, digite uma das opções abaixo:\n\n*60* - Produtos\n*61* - Serviço Empresarial\n*62* - Serviço Contábil\n*0* - Menu inicial\n*99* - Falar com atendente IA');
-
+        await client.sendMessage(msg.from, 'OlÃ¡! ' + name.split(" ")[0] + ' Por favor, digite uma das opÃ§Ãµes abaixo:\n\n*60* - Produtos\n*61* - ServiÃ§o Empresarial\n*62* - ServiÃ§o ContÃ¡bil\n*0* - Menu inicial\n*99* - Falar com atendente IA');
+        
     }
 
 
@@ -116,14 +113,14 @@ client.on('message', async msg => {
         const chat = await msg.getChat();
 
         VPJ = 'PJ';
-        VPessoa = 'Pessoa Jurídica';
+        VPessoa = 'Pessoa JurÃ­dica';
 
         await delay(3000); //delay de 3 segundos
-        await chat.sendStateTyping(); // Simulando Digitação
+        await chat.sendStateTyping(); // Simulando DigitaÃ§Ã£o
         await delay(3000); //Delay de 3000 milisegundos mais conhecido como 3 segundos
         const contact = await msg.getContact(); //Pegando o contato
         const name = contact.pushname; //Pegando o nome do contato
-        await client.sendMessage(msg.from, 'Olá! ' + name.split(" ")[0] + ' Por favor, digite uma das opções abaixo:\n\n*1* - Sou Pessoa Jurídica (Pública)\n*2* - Sou Pessoa Jurídica (Privada)\n*0* - Menu inicial\n*99* - Falar com atendente IA'); //Primeira mensagem de texto
+        await client.sendMessage(msg.from, 'OlÃ¡! ' + name.split(" ")[0] + ' Por favor, digite uma das opÃ§Ãµes abaixo:\n\n*1* - Sou Pessoa JurÃ­dica (PÃºblica)\n*2* - Sou Pessoa JurÃ­dica (Privada)\n*0* - Menu inicial\n*99* - Falar com atendente IA'); //Primeira mensagem de texto
 
     }
 
@@ -135,11 +132,11 @@ client.on('message', async msg => {
         VPessoa = 'Contabilidade';
 
         await delay(3000); //delay de 3 segundos
-        await chat.sendStateTyping(); // Simulando Digitação
+        await chat.sendStateTyping(); // Simulando DigitaÃ§Ã£o
         await delay(3000); //Delay de 3000 milisegundos mais conhecido como 3 segundos
         const contact = await msg.getContact(); //Pegando o contato
         const name = contact.pushname; //Pegando o nome do contato
-        await client.sendMessage(msg.from, 'Olá! ' + name.split(" ")[0] + ' Por favor, digite uma das opções abaixo:\n\n*20* - Declarações e obrigações fiscais\n*21* - Organização e análise contábil\n*22* - Suporte em decisões empresariais\n*23* - Escrituração contábil e tributária\n*37* - Download Nfe PDF\n*38* - Consulta CNPJ\n*0* - Menu inicial\n*99* - Falar com atendente IA'); //Primeira mensagem de texto
+        await client.sendMessage(msg.from, 'OlÃ¡! ' + name.split(" ")[0] + ' Por favor, digite uma das opÃ§Ãµes abaixo:\n\n*20* - DeclaraÃ§Ãµes e obrigaÃ§Ãµes fiscais\n*21* - OrganizaÃ§Ã£o e anÃ¡lise contÃ¡bil\n*22* - Suporte em decisÃµes empresariais\n*23* - EscrituraÃ§Ã£o contÃ¡bil e tributÃ¡ria\n*37* - Download Nfe PDF\n*38* - Consulta CNPJ\n*0* - Menu inicial\n*99* - Falar com atendente IA'); //Primeira mensagem de texto
 
     }
 
@@ -149,14 +146,14 @@ client.on('message', async msg => {
 
         const chat = await msg.getChat();
 
-        VPessoa = 'Tecnologia da Informática';
+        VPessoa = 'Tecnologia da InformÃ¡tica';
 
         await delay(3000); //delay de 3 segundos
-        await chat.sendStateTyping(); // Simulando Digitação
+        await chat.sendStateTyping(); // Simulando DigitaÃ§Ã£o
         await delay(3000); //Delay de 3000 milisegundos mais conhecido como 3 segundos
         const contact = await msg.getContact(); //Pegando o contato
         const name = contact.pushname; //Pegando o nome do contato
-        await client.sendMessage(msg.from, 'Olá! ' + name.split(" ")[0] + ' Por favor, digite uma das opções abaixo:\n\n*50* - Produtos\n*51* - Serviços\n*52* - Desenvolvimento TIC\n*53* - Designer\n*54* - Redes\n*55* - Softs\n*56* - APIs\n*57* - Outro\n*0* - Menu inicial\n*99* - Falar com atendente IA'); //Primeira mensagem de texto
+        await client.sendMessage(msg.from, 'OlÃ¡! ' + name.split(" ")[0] + ' Por favor, digite uma das opÃ§Ãµes abaixo:\n\n*50* - Produtos\n*51* - ServiÃ§os\n*52* - Desenvolvimento TIC\n*53* - Designer\n*54* - Redes\n*55* - Softs\n*56* - APIs\n*57* - Outro\n*0* - Menu inicial\n*99* - Falar com atendente IA'); //Primeira mensagem de texto
 
     }
 
@@ -166,10 +163,10 @@ client.on('message', async msg => {
 
         const chat = await msg.getChat();
 
-        VDireito = 'Público';
+        VDireito = 'PÃºblico';
 
         await delay(3000); //delay de 3 segundos
-        await chat.sendStateTyping(); // Simulando Digitação
+        await chat.sendStateTyping(); // Simulando DigitaÃ§Ã£o
         await delay(3000);
         await client.sendMessage(msg.from, '*PJ* | Por favor digite o seu CNPJ.');
     }
@@ -182,7 +179,7 @@ client.on('message', async msg => {
         VDireito = 'Privado';
 
         await delay(3000); //delay de 3 segundos
-        await chat.sendStateTyping(); // Simulando Digitação
+        await chat.sendStateTyping(); // Simulando DigitaÃ§Ã£o
         await delay(3000);
         await client.sendMessage(msg.from, '*PJ* | Por favor digite o seu CNPJ.');
     }
@@ -208,149 +205,151 @@ client.on('message', async msg => {
 
         cnpj = msg.body.replace(/[^\d]+/g, '');
 
-        if (isNaN(cnpj) == false) {
+        if(isNaN(cnpj) == false)
+        {
             if (cnpj == '') vrf = "false";
-            if (cnpj.length != 14) vrf = "false";
+        if (cnpj.length != 14) vrf = "false";
 
-            if (cnpj == "00000000000000" ||
-                cnpj == "11111111111111" ||
-                cnpj == "22222222222222" ||
-                cnpj == "33333333333333" ||
-                cnpj == "44444444444444" ||
-                cnpj == "55555555555555" ||
-                cnpj == "66666666666666" ||
-                cnpj == "77777777777777" ||
-                cnpj == "88888888888888" ||
-                cnpj == "99999999999999")
-                vrf = "false";
+        if (cnpj == "00000000000000" ||
+            cnpj == "11111111111111" ||
+            cnpj == "22222222222222" ||
+            cnpj == "33333333333333" ||
+            cnpj == "44444444444444" ||
+            cnpj == "55555555555555" ||
+            cnpj == "66666666666666" ||
+            cnpj == "77777777777777" ||
+            cnpj == "88888888888888" ||
+            cnpj == "99999999999999")
+            vrf = "false";
 
-            tamanho = cnpj.length - 2
-            numeros = cnpj.substring(0, tamanho);
-            digitos = cnpj.substring(tamanho);
-            soma = 0;
-            pos = tamanho - 7;
-            for (i = tamanho; i >= 1; i--) {
-                soma += numeros.charAt(tamanho - i) * pos--;
-                if (pos < 2)
-                    pos = 9;
-            }
-            resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
-            if (resultado != digitos.charAt(0)) vrf = "false";
-            tamanho = tamanho + 1;
-            numeros = cnpj.substring(0, tamanho);
-            soma = 0;
-            pos = tamanho - 7;
-            for (i = tamanho; i >= 1; i--) {
-                soma += numeros.charAt(tamanho - i) * pos--;
-                if (pos < 2)
-                    pos = 9;
-            }
-            resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
-            if (resultado != digitos.charAt(1))
-                vrf = "false";
+        tamanho = cnpj.length - 2
+        numeros = cnpj.substring(0, tamanho);
+        digitos = cnpj.substring(tamanho);
+        soma = 0;
+        pos = tamanho - 7;
+        for (i = tamanho; i >= 1; i--) {
+            soma += numeros.charAt(tamanho - i) * pos--;
+            if (pos < 2)
+                pos = 9;
+        }
+        resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
+        if (resultado != digitos.charAt(0)) vrf = "false";
+        tamanho = tamanho + 1;
+        numeros = cnpj.substring(0, tamanho);
+        soma = 0;
+        pos = tamanho - 7;
+        for (i = tamanho; i >= 1; i--) {
+            soma += numeros.charAt(tamanho - i) * pos--;
+            if (pos < 2)
+                pos = 9;
+        }
+        resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
+        if (resultado != digitos.charAt(1))
+            vrf = "false";
 
-            // CNPJ V�lido
-            if (vrf != "false") {
+        // CNPJ Vï¿½lido
+        if (vrf != "false") {
 
-                //var axios = require('axios');
-                var config = {
-                    method: 'get', url: 'https://www.receitaws.com.br/v1/cnpj/' + cnpj,
-                };
+            var axios = require('axios');
+            var config = {
+                method: 'get', url: 'https://www.receitaws.com.br/v1/cnpj/' + cnpj,
+            };
 
-                axios(config)
+            axios(config)
 
-                function getCNPJ() {
-                    axios.get('https://www.receitaws.com.br/v1/cnpj/' + cnpj)
-                        .then(response => {
-                            //console.log(JSON.stringify(response.data));
-                            VCNPJ = (JSON.stringify(response.data.cnpj));
-                            EmpCnpj = (JSON.stringify(response.data.cnpj));
-                            EmpRzSocila = (JSON.stringify(response.data.nome));
-                            EmpNFantasia = (JSON.stringify(response.data.fantasia));
-                            EmpPorte = (JSON.stringify(response.data.porte));
-                            EmpNjudridico = (JSON.stringify(response.data.natureza_juridica));
-                            VSimples = (JSON.stringify(response.data.simples.optante));
-                            if (VSimples == 'false') {
-                                EmpSimples = 'Não';
-                            }
-                            if (VSimples == 'true') {
-                                EmpSimples = 'Sim';
+            function getCNPJ() {
+                axios.get('https://www.receitaws.com.br/v1/cnpj/' + cnpj)
+                    .then(response => {
+                        //console.log(JSON.stringify(response.data));
+                        VCNPJ = (JSON.stringify(response.data.cnpj));
+                        EmpCnpj = (JSON.stringify(response.data.cnpj));
+                        EmpRzSocila = (JSON.stringify(response.data.nome));
+                        EmpNFantasia = (JSON.stringify(response.data.fantasia));
+                        EmpPorte = (JSON.stringify(response.data.porte));
+                        EmpNjudridico = (JSON.stringify(response.data.natureza_juridica));
+                        VSimples = (JSON.stringify(response.data.simples.optante));
+                        if (VSimples == 'false') {
+                            EmpSimples = 'NÃ£o';
+                        }
+                        if (VSimples == 'true') {
+                            EmpSimples = 'Sim';
 
-                            }
+                        }
 
-                        })
-                        .catch(function (error) {
-                            console.log(error);
-                        });
-
-                }
-                getCNPJ()
-
-                await delay(3000); //delay de 3 segundos
-                await chat.sendStateTyping(); // Simulando Digitação
-                await delay(3000);
-                await client.sendMessage(msg.from, '*Seu dados são:*');
-
-                await delay(3000); //delay de 3 segundos
-                await chat.sendStateTyping(); // Simulando Digitação
-                await delay(3000);
-                await client.sendMessage(msg.from, 'CNPJ: ' + '*' + EmpCnpj + '*');
-
-                await delay(3000); //delay de 3 segundos
-                await chat.sendStateTyping(); // Simulando Digitação
-                await delay(3000);
-                await client.sendMessage(msg.from, 'Razão Social: ' + '*' + EmpRzSocila + '*');
-
-                await delay(3000); //delay de 3 segundos
-                await chat.sendStateTyping(); // Simulando Digitação
-                await delay(3000);
-                await client.sendMessage(msg.from, 'Nome Fantasia: ' + '*' + EmpNFantasia + '*');
-
-                await delay(3000); //delay de 3 segundos
-                await chat.sendStateTyping(); // Simulando Digitação
-                await delay(3000);
-                await client.sendMessage(msg.from, 'Porte da empresa: ' + '*' + EmpPorte + '*');
-
-                await delay(3000); //delay de 3 segundos
-                await chat.sendStateTyping(); // Simulando Digitação
-                await delay(3000);
-                await client.sendMessage(msg.from, 'Natureza Jurídica: ' + '*' + EmpNjudridico + '*');
-
-                await delay(3000); //delay de 3 segundos
-                await chat.sendStateTyping(); // Simulando Digitação
-                await delay(3000);
-                await client.sendMessage(msg.from, 'Simples Nacional: ' + '*' + EmpSimples + '*');
-
-                await delay(3000); //delay de 3 segundos
-                await chat.sendStateTyping(); // Simulando Digitação
-                await delay(3000);
-                await client.sendMessage(msg.from, 'Por favor, digite uma das opções abaixo:\n\n*Sim*  - Estão corretas\n*Não*  - Estão erradas');
-
-                if (vrf == "false") {
-
-                    await delay(3000); //delay de 3 segundos
-                    await chat.sendStateTyping(); // Simulando Digitação
-                    await delay(3000);
-                    await client.sendMessage(msg.from, 'Você digitou um CNPJ:  ' + cnpj + ' incorreto ou falso');
-
-                }
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                    });
 
             }
-            else {
+            getCNPJ()
+
+            await delay(3000); //delay de 3 segundos
+            await chat.sendStateTyping(); // Simulando DigitaÃ§Ã£o
+            await delay(3000);
+            await client.sendMessage(msg.from, '*Seu dados sÃ£o:*');
+
+            await delay(3000); //delay de 3 segundos
+            await chat.sendStateTyping(); // Simulando DigitaÃ§Ã£o
+            await delay(3000);
+            await client.sendMessage(msg.from, 'CNPJ: ' + '*' + EmpCnpj + '*');
+
+            await delay(3000); //delay de 3 segundos
+            await chat.sendStateTyping(); // Simulando DigitaÃ§Ã£o
+            await delay(3000);
+            await client.sendMessage(msg.from, 'RazÃ£o Social: ' + '*' + EmpRzSocila + '*');
+
+            await delay(3000); //delay de 3 segundos
+            await chat.sendStateTyping(); // Simulando DigitaÃ§Ã£o
+            await delay(3000);
+            await client.sendMessage(msg.from, 'Nome Fantasia: ' + '*' + EmpNFantasia + '*');
+
+            await delay(3000); //delay de 3 segundos
+            await chat.sendStateTyping(); // Simulando DigitaÃ§Ã£o
+            await delay(3000);
+            await client.sendMessage(msg.from, 'Porte da empresa: ' + '*' + EmpPorte + '*');
+
+            await delay(3000); //delay de 3 segundos
+            await chat.sendStateTyping(); // Simulando DigitaÃ§Ã£o
+            await delay(3000);
+            await client.sendMessage(msg.from, 'Natureza JurÃ­dica: ' + '*' + EmpNjudridico + '*');
+
+            await delay(3000); //delay de 3 segundos
+            await chat.sendStateTyping(); // Simulando DigitaÃ§Ã£o
+            await delay(3000);
+            await client.sendMessage(msg.from, 'Simples Nacional: ' + '*' + EmpSimples + '*');
+
+            await delay(3000); //delay de 3 segundos
+            await chat.sendStateTyping(); // Simulando DigitaÃ§Ã£o
+            await delay(3000);
+            await client.sendMessage(msg.from, 'Por favor, digite uma das opÃ§Ãµes abaixo:\n\n*Sim*  - EstÃ£o corretas\n*NÃ£o*  - EstÃ£o erradas');
+
+            if (vrf == "false") {
+
                 await delay(3000); //delay de 3 segundos
-                await chat.sendStateTyping(); // Simulando Digitação
+                await chat.sendStateTyping(); // Simulando DigitaÃ§Ã£o
                 await delay(3000);
-                await client.sendMessage(msg.from, 'Por favor, digite novamente não entendemos! Verifique se está corrento por favor!');
+                await client.sendMessage(msg.from, 'VocÃª digitou um CNPJ:  ' + cnpj + ' incorreto ou falso');
+    
             }
+            
+        }
+        else
+        {
+            await delay(3000); //delay de 3 segundos
+            await chat.sendStateTyping(); // Simulando DigitaÃ§Ã£o
+            await delay(3000);
+            await client.sendMessage(msg.from, 'Por favor, digite novamente nÃ£o entendemos! Verifique se estÃ¡ corrento por favor!');
+        }
 
 
-
+            
 
         }
 
 
 
-
+        
 
 
 
@@ -362,19 +361,19 @@ client.on('message', async msg => {
         const chat = await msg.getChat();
 
         await delay(3000); //delay de 3 segundos
-        await chat.sendStateTyping(); // Simulando Digitação
+        await chat.sendStateTyping(); // Simulando DigitaÃ§Ã£o
         await delay(3000);
-        await client.sendMessage(msg.from, '*PJ* | Por favor, digite uma das opções abaixo:\n\n*3* - Produtos\n*4* - Serviços\n*9* - Preenchimento de Cotações\n*10* - Convite para licitações\n*15* - Falar com atendente');
+        await client.sendMessage(msg.from, '*PJ* | Por favor, digite uma das opÃ§Ãµes abaixo:\n\n*3* - Produtos\n*4* - ServiÃ§os\n*9* - Preenchimento de CotaÃ§Ãµes\n*10* - Convite para licitaÃ§Ãµes\n*15* - Falar com atendente');
 
     }
 
-    //Não
-    if (msg.body !== null && msg.body == 'Não' || msg.body == 'não' || msg.body == 'NÃO' && msg.from.endsWith('@c.us')) {
+    //NÃ£o
+    if (msg.body !== null && msg.body == 'NÃ£o' || msg.body == 'nÃ£o' || msg.body == 'NÃƒO' && msg.from.endsWith('@c.us')) {
         const chat = await msg.getChat();
 
 
         await delay(3000); //delay de 3 segundos
-        await chat.sendStateTyping(); // Simulando Digitação
+        await chat.sendStateTyping(); // Simulando DigitaÃ§Ã£o
         await delay(3000);
         await client.sendMessage(msg.from, '*PJ* | Por favor digite novamente o CNPJ!');
 
@@ -389,53 +388,53 @@ client.on('message', async msg => {
         VNatOperacao = 'Produtos';
 
         await delay(3000); //delay de 3 segundos
-        await chat.sendStateTyping(); // Simulando Digitação
+        await chat.sendStateTyping(); // Simulando DigitaÃ§Ã£o
         await delay(3000);
-        await client.sendMessage(msg.from, '*PJ* | Por favor, digite uma das opções abaixo:\n\n*5* - Estou vendendo\n*6* - Estou comprando'); //Primeira mensagem de texto
+        await client.sendMessage(msg.from, '*PJ* | Por favor, digite uma das opÃ§Ãµes abaixo:\n\n*5* - Estou vendendo\n*6* - Estou comprando'); //Primeira mensagem de texto
 
     }
 
-    //Produtos PF
-    if (msg.body !== null && msg.body === '60' && msg.from.endsWith('@c.us')) {
+     //Produtos PF
+     if (msg.body !== null && msg.body === '60' && msg.from.endsWith('@c.us')) {
 
         const chat = await msg.getChat();
 
-        VPJ = 'PJ';
+         VPJ = 'PJ';
         VNatOperacao = 'Produtos';
 
         await delay(3000); //delay de 3 segundos
-        await chat.sendStateTyping(); // Simulando Digitação
+        await chat.sendStateTyping(); // Simulando DigitaÃ§Ã£o
         await delay(3000);
-        await client.sendMessage(msg.from, '*PF* | Por favor, digite uma das opções abaixo:\n\n*64* - Estou vendendo\n*65* - Estou comprando'); //Primeira mensagem de texto
+         await client.sendMessage(msg.from, '*PF* | Por favor, digite uma das opÃ§Ãµes abaixo:\n\n*64* - Estou vendendo\n*65* - Estou comprando'); //Primeira mensagem de texto
 
     }
 
-    //Servi�os PJ
+    //Serviï¿½os PJ
     if (msg.body !== null && msg.body === '4' && msg.from.endsWith('@c.us')) {
 
         const chat = await msg.getChat();
 
         VPJ = 'PJ';
-        VNatOperacao = 'Serviços';
+        VNatOperacao = 'ServiÃ§os';
 
         await delay(3000); //delay de 3 segundos
-        await chat.sendStateTyping(); // Simulando Digitação
+        await chat.sendStateTyping(); // Simulando DigitaÃ§Ã£o
         await delay(3000);
-        await client.sendMessage(msg.from, '*PJ* | Por favor, digite uma das opções abaixo:\n\n*7* - Sou prestador serviços\n*8* - Sou tomador serviços'); //Primeira mensagem de texto
+        await client.sendMessage(msg.from, '*PJ* | Por favor, digite uma das opÃ§Ãµes abaixo:\n\n*7* - Sou prestador serviÃ§os\n*8* - Sou tomador serviÃ§os'); //Primeira mensagem de texto
 
     }
 
-    //Servi�os PF
+    //Serviï¿½os PF
     if (msg.body !== null && msg.body === '61' && msg.from.endsWith('@c.us')) {
 
         const chat = await msg.getChat();
 
-        VNatOperacao = 'Serviços';
+        VNatOperacao = 'ServiÃ§os';
 
         await delay(3000); //delay de 3 segundos
-        await chat.sendStateTyping(); // Simulando Digitação
+        await chat.sendStateTyping(); // Simulando DigitaÃ§Ã£o
         await delay(3000);
-        await client.sendMessage(msg.from, '*PF* | Por favor, digite uma das opções abaixo:\n\n*66* - Sou prestador serviços\n*67* - Sou tomador serviços'); //Primeira mensagem de texto
+        await client.sendMessage(msg.from, '*PF* | Por favor, digite uma das opÃ§Ãµes abaixo:\n\n*66* - Sou prestador serviÃ§os\n*67* - Sou tomador serviÃ§os'); //Primeira mensagem de texto
 
     }
 
@@ -448,9 +447,9 @@ client.on('message', async msg => {
         VFomento = 'Estou vendendo';
 
         await delay(3000); //delay de 3 segundos
-        await chat.sendStateTyping(); // Simulando Digitação
+        await chat.sendStateTyping(); // Simulando DigitaÃ§Ã£o
         await delay(3000);
-        await client.sendMessage(msg.from, '*PJ* | Descreva para nós que produtos deseja vender e retornaremos o contato o mais breve possível com um de nossos atendentes?');
+        await client.sendMessage(msg.from, '*PJ* | Descreva para nÃ³s que produtos deseja vender e retornaremos o contato o mais breve possÃ­vel com um de nossos atendentes?');
 
     }
 
@@ -462,17 +461,17 @@ client.on('message', async msg => {
         VFomento = 'Estou vendendo';
 
         await delay(3000); //delay de 3 segundos
-        await chat.sendStateTyping(); // Simulando Digitação
+        await chat.sendStateTyping(); // Simulando DigitaÃ§Ã£o
         await delay(3000);
-        await client.sendMessage(msg.from, '*PF* | Descreva para nós que produtos deseja vender e retornaremos o contato o mais breve possível com um de nossos atendentes?');
+        await client.sendMessage(msg.from, '*PF* | Descreva para nÃ³s que produtos deseja vender e retornaremos o contato o mais breve possÃ­vel com um de nossos atendentes?');
 
         await delay(3000); //delay de 3 segundos
-        await chat.sendStateTyping(); // Simulando Digitação
+        await chat.sendStateTyping(); // Simulando DigitaÃ§Ã£o
         await delay(3000);
-        await client.sendMessage(msg.from, 'Nossos atendentes retornarão o contato assim que possível');
+        await client.sendMessage(msg.from, 'Nossos atendentes retornarÃ£o o contato assim que possÃ­vel');
 
         await delay(3000); //delay de 3 segundos
-        await chat.sendStateTyping(); // Simulando Digitação
+        await chat.sendStateTyping(); // Simulando DigitaÃ§Ã£o
         await delay(3000);
         await client.sendMessage(msg.from, 'Info do seu contato abaixo:\n\n ' + VPessoa + ' ' + VDireito + ' - \n' + VNatOperacao + '\n' + VFomento + '\n' + VDescricao);
 
@@ -486,9 +485,9 @@ client.on('message', async msg => {
         VFomento = 'Estou comprando';
 
         await delay(3000); //delay de 3 segundos
-        await chat.sendStateTyping(); // Simulando Digitação
+        await chat.sendStateTyping(); // Simulando DigitaÃ§Ã£o
         await delay(3000);
-        await client.sendMessage(msg.from, '*PJ* | Descreva para nós que produtos deseja comprar e retornaremos o contato o mais breve possível com um de nossos atendentes?');
+        await client.sendMessage(msg.from, '*PJ* | Descreva para nÃ³s que produtos deseja comprar e retornaremos o contato o mais breve possÃ­vel com um de nossos atendentes?');
 
     }
 
@@ -500,118 +499,118 @@ client.on('message', async msg => {
         VFomento = 'Estou comprando';
 
         await delay(3000); //delay de 3 segundos
-        await chat.sendStateTyping(); // Simulando Digitação
+        await chat.sendStateTyping(); // Simulando DigitaÃ§Ã£o
         await delay(3000);
-        await client.sendMessage(msg.from, '*PF* | Descreva para nós que produtos deseja comprar e retornaremos o contato o mais breve possível com um de nossos atendentes?');
+        await client.sendMessage(msg.from, '*PF* | Descreva para nÃ³s que produtos deseja comprar e retornaremos o contato o mais breve possÃ­vel com um de nossos atendentes?');
 
         await delay(3000); //delay de 3 segundos
-        await chat.sendStateTyping(); // Simulando Digitação
+        await chat.sendStateTyping(); // Simulando DigitaÃ§Ã£o
         await delay(3000);
-        await client.sendMessage(msg.from, 'Nossos atendentes retornarão o contato assim que possível');
+        await client.sendMessage(msg.from, 'Nossos atendentes retornarÃ£o o contato assim que possÃ­vel');
 
         await delay(3000); //delay de 3 segundos
-        await chat.sendStateTyping(); // Simulando Digitação
+        await chat.sendStateTyping(); // Simulando DigitaÃ§Ã£o
         await delay(3000);
         await client.sendMessage(msg.from, 'Info do seu contato abaixo:\n\n ' + VPessoa + ' ' + VDireito + ' - \n' + VNatOperacao + '\n' + VFomento + '\n' + VDescricao);
 
 
     }
 
-    //Sou prestador servi�os PJ
+    //Sou prestador serviï¿½os PJ
     if (msg.body !== null && msg.body === '7' && msg.from.endsWith('@c.us')) {
 
         const chat = await msg.getChat();
 
         VPJ = 'PJ';
-        VFomento = 'Sou prestador serviços';
+        VFomento = 'Sou prestador serviÃ§os';
 
         await delay(3000); //delay de 3 segundos
-        await chat.sendStateTyping(); // Simulando Digitação
+        await chat.sendStateTyping(); // Simulando DigitaÃ§Ã£o
         await delay(3000);
-        await client.sendMessage(msg.from, '*PJ* | Descreva para nós suas atividades utilizando pelo menos 20 caracteres?');
+        await client.sendMessage(msg.from, '*PJ* | Descreva para nÃ³s suas atividades utilizando pelo menos 20 caracteres?');
 
     }
 
-    //Sou prestador servi�os PF
+    //Sou prestador serviï¿½os PF
     if (msg.body !== null && msg.body === '66' && msg.from.endsWith('@c.us')) {
 
         const chat = await msg.getChat();
 
-        VFomento = 'Sou prestador serviços';
+        VFomento = 'Sou prestador serviÃ§os';
 
         await delay(3000); //delay de 3 segundos
-        await chat.sendStateTyping(); // Simulando Digitação
+        await chat.sendStateTyping(); // Simulando DigitaÃ§Ã£o
         await delay(3000);
-        await client.sendMessage(msg.from, '*PF* | Descreva para nós suas atividades utilizando pelo menos 20 caracteres?');
+        await client.sendMessage(msg.from, '*PF* | Descreva para nÃ³s suas atividades utilizando pelo menos 20 caracteres?');
 
         await delay(3000); //delay de 3 segundos
-        await chat.sendStateTyping(); // Simulando Digitação
+        await chat.sendStateTyping(); // Simulando DigitaÃ§Ã£o
         await delay(3000);
-        await client.sendMessage(msg.from, 'Nossos atendentes retornarão o contato assim que possível');
+        await client.sendMessage(msg.from, 'Nossos atendentes retornarÃ£o o contato assim que possÃ­vel');
 
         await delay(3000); //delay de 3 segundos
-        await chat.sendStateTyping(); // Simulando Digitação
+        await chat.sendStateTyping(); // Simulando DigitaÃ§Ã£o
         await delay(3000);
         await client.sendMessage(msg.from, 'Info do contato abaixo:\n\n ' + VPessoa + ' ' + VDireito + ' - \n' + VNatOperacao + '\n' + VFomento + '\n' + VDescricao);
 
 
     }
 
-    //Sou tomador servi�os PJ
+    //Sou tomador serviï¿½os PJ
     if (msg.body !== null && msg.body === '8' && msg.from.endsWith('@c.us')) {
 
         const chat = await msg.getChat();
 
         VPJ = 'PJ';
-        VFomento = 'Sou tomador serviços';
+        VFomento = 'Sou tomador serviÃ§os';
 
         await delay(3000); //delay de 3 segundos
-        await chat.sendStateTyping(); // Simulando Digitação
+        await chat.sendStateTyping(); // Simulando DigitaÃ§Ã£o
         await delay(3000);
-        await client.sendMessage(msg.from, '*PJ* | Descreva para nós suas atividades utilizando pelo menos 20 caracteres?');
+        await client.sendMessage(msg.from, '*PJ* | Descreva para nÃ³s suas atividades utilizando pelo menos 20 caracteres?');
 
     }
 
-    //Sou tomador servi�os PF
+    //Sou tomador serviï¿½os PF
     if (msg.body !== null && msg.body === '67' && msg.from.endsWith('@c.us')) {
 
         const chat = await msg.getChat();
 
-        VFomento = 'Sou tomador serviços';
+        VFomento = 'Sou tomador serviÃ§os';
 
         await delay(3000); //delay de 3 segundos
-        await chat.sendStateTyping(); // Simulando Digitação
+        await chat.sendStateTyping(); // Simulando DigitaÃ§Ã£o
         await delay(3000);
-        await client.sendMessage(msg.from, '*PF* | Descreva para nós suas atividades utilizando pelo menos 20 caracteres?');
+        await client.sendMessage(msg.from, '*PF* | Descreva para nÃ³s suas atividades utilizando pelo menos 20 caracteres?');
 
         await delay(3000); //delay de 3 segundos
-        await chat.sendStateTyping(); // Simulando Digitação
+        await chat.sendStateTyping(); // Simulando DigitaÃ§Ã£o
         await delay(3000);
-        await client.sendMessage(msg.from, 'Nossos atendentes retornarão o contato assim que possível');
+        await client.sendMessage(msg.from, 'Nossos atendentes retornarÃ£o o contato assim que possÃ­vel');
 
         await delay(3000); //delay de 3 segundos
-        await chat.sendStateTyping(); // Simulando Digitação
+        await chat.sendStateTyping(); // Simulando DigitaÃ§Ã£o
         await delay(3000);
         await client.sendMessage(msg.from, 'Info do contato abaixo:\n\n ' + VPessoa + '\n' + VNatOperacao + '\n' + VFomento);
 
     }
 
 
-    //Servi�os cont�bil PF
+    //Serviï¿½os contï¿½bil PF
     if (msg.body !== null && msg.body.length === '62' && msg.from.endsWith('@c.us')) {
         const chat = await msg.getChat();
 
         VDescricao = msg.body;
 
         await delay(3000); //delay de 3 segundos
-        await chat.sendStateTyping(); // Simulando Digitação
+        await chat.sendStateTyping(); // Simulando DigitaÃ§Ã£o
         await delay(3000);
-        await client.sendMessage(msg.from, '*PF* | Descreva para nós suas necessidades utilizando pelo menos 20 caracteres?\nNossos atendentes retornarão o contato assim que possível');
+        await client.sendMessage(msg.from, '*PF* | Descreva para nÃ³s suas necessidades utilizando pelo menos 20 caracteres?\nNossos atendentes retornarÃ£o o contato assim que possÃ­vel');
 
         await delay(3000); //delay de 3 segundos
-        await chat.sendStateTyping(); // Simulando Digitação
+        await chat.sendStateTyping(); // Simulando DigitaÃ§Ã£o
         await delay(3000);
-        await client.sendMessage(msg.from, 'Caso desejar poderá usar o link para o envio de arquivos: https://vioh.com.br/Index#contactForm');
+        await client.sendMessage(msg.from, 'Caso desejar poderÃ¡ usar o link para o envio de arquivos: https://vioh.com.br/Index#contactForm');
     }
 
     //Falar com atendente PF
@@ -621,14 +620,14 @@ client.on('message', async msg => {
         VDescricao = msg.body;
 
         await delay(3000); //delay de 3 segundos
-        await chat.sendStateTyping(); // Simulando Digitação
+        await chat.sendStateTyping(); // Simulando DigitaÃ§Ã£o
         await delay(3000);
-        await client.sendMessage(msg.from, '*PF* | Descreva para nós suas necessidades utilizando pelo menos 20 caracteres?\nNossos atendentes retornarão o contato assim que possível');
+        await client.sendMessage(msg.from, '*PF* | Descreva para nÃ³s suas necessidades utilizando pelo menos 20 caracteres?\nNossos atendentes retornarÃ£o o contato assim que possÃ­vel');
 
         await delay(3000); //delay de 3 segundos
-        await chat.sendStateTyping(); // Simulando Digitação
+        await chat.sendStateTyping(); // Simulando DigitaÃ§Ã£o
         await delay(3000);
-        await client.sendMessage(msg.from, 'Caso desejar poderá usar o link para o envio de arquivos: https://vioh.com.br/Index#contactForm');
+        await client.sendMessage(msg.from, 'Caso desejar poderÃ¡ usar o link para o envio de arquivos: https://vioh.com.br/Index#contactForm');
     }
 
     //Falar com atendente IA
@@ -637,54 +636,54 @@ client.on('message', async msg => {
         VIA = '99';
 
         await delay(3000); //delay de 3 segundos
-        await chat.sendStateTyping(); // Simulando Digitação
+        await chat.sendStateTyping(); // Simulando DigitaÃ§Ã£o
         await delay(3000);
-        await client.sendMessage(msg.from, '*IA* | Agora você está conversando com a *IA da VioH*, Pergunte algo?');
+        await client.sendMessage(msg.from, '*IA* | Agora vocÃª estÃ¡ conversando com a *IA da VioH*, Pergunte algo?');
     }
 
     //Falar com atendente IA
     if (msg.body !== null && msg.body != "" && msg.body !== "99" && VIA === '99' && msg.from.endsWith('@c.us')) {
         const chat = await msg.getChat();
+        
+        const axios = require('axios');
 
-        //const axios = require('axios');
-
-       const apiKey = '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';
+        const apiKey =  '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';
         const url = 'https://api.openai.com/v1/chat/completions';
 
         let responseIA;
 
         axios.post(url, {
             model: "gpt-4o-mini",
-            messages: [{ "role": "user", "content": msg.body }],
+            messages: [{"role": "user", "content": msg.body }],
             temperature: 0.7,
-            max_tokens: 1024,
+            max_tokens: 1024, 
 
         }, {
-            headers: {
-                "Content-Type": "application/json",
-                'Authorization': `Bearer ${apiKey}`,
-            }
+        headers:{
+            "Content-Type": "application/json",
+            'Authorization': `Bearer ${apiKey}`,
+        }
         })
-            .then(response => {
-                //console.log(JSON.stringify(response.data.choices[0].message.content));
-                let rps = JSON.stringify(response.data.choices[0].message.content);
-                if (rps != "undefined") {
-                    responseIA = '*IA* : ' + JSON.stringify(response.data.choices[0].message.content).replace("\n\n", " ");
-                }
-                else {
-                    responseIA = '*IA* Não entendi, poderia se expressar melhor?';
-                }
+        .then( response => {
+        //console.log(JSON.stringify(response.data.choices[0].message.content));
+        let rps = JSON.stringify(response.data.choices[0].message.content);
+        if(rps != "undefined" ){
+            responseIA = '*IA* : ' + JSON.stringify(response.data.choices[0].message.content).replace("\n\n", " ");
+        }
+        else{
+            responseIA = '*IA* NÃ£o entendi, poderia se expressar melhor?';
+        }
 
-            })
-            .catch(function (error) {
-                console.log(error);
-            });
+        })
+        .catch(function (error) {
+        console.log(error);
+        });
 
 
         await delay(3000); //delay de 3 segundos
-        await chat.sendStateTyping(); // Simulando Digitação
+        await chat.sendStateTyping(); // Simulando DigitaÃ§Ã£o
         await delay(3000);
-        await client.sendMessage(msg.from, responseIA);
+        await client.sendMessage(msg.from,  responseIA);
 
         VIA = '99';
 
@@ -692,37 +691,37 @@ client.on('message', async msg => {
     }
 
 
-    //Cota��es
+    //Cotaï¿½ï¿½es
     if (msg.body !== null && msg.body === '9' && msg.from.endsWith('@c.us')) {
         const chat = await msg.getChat();
 
         await delay(3000); //Delay de 3000 milisegundos mais conhecido como 3 segundos
-        await chat.sendStateTyping(); // Simulando Digitação
+        await chat.sendStateTyping(); // Simulando DigitaÃ§Ã£o
         await delay(3000);
-        await client.sendMessage(msg.from, '*PJ* | Envie por aqui mesmo os arquivos para nós e devolveremos posteriormente preenchidos');
+        await client.sendMessage(msg.from, '*PJ* | Envie por aqui mesmo os arquivos para nÃ³s e devolveremos posteriormente preenchidos');
 
 
         await delay(3000); //delay de 3 segundos
-        await chat.sendStateTyping(); // Simulando Digitação
+        await chat.sendStateTyping(); // Simulando DigitaÃ§Ã£o
         await delay(3000);
-        await client.sendMessage(msg.from, 'Caso desejar poderá usar o link para o envio de arquivos: https://vioh.com.br/Index#contactForm');
+        await client.sendMessage(msg.from, 'Caso desejar poderÃ¡ usar o link para o envio de arquivos: https://vioh.com.br/Index#contactForm');
 
     }
 
-    //Licita��es
+    //Licitaï¿½ï¿½es
     if (msg.body !== null && msg.body === '10' && msg.from.endsWith('@c.us')) {
         const chat = await msg.getChat();
 
         await delay(3000); //Delay de 3000 milisegundos mais conhecido como 3 segundos
-        await chat.sendStateTyping(); // Simulando Digitação
+        await chat.sendStateTyping(); // Simulando DigitaÃ§Ã£o
         await delay(3000);
         await client.sendMessage(msg.from, '*PJ* | Envie por aqui mesmo o convite ou link');
 
 
         await delay(3000); //delay de 3 segundos
-        await chat.sendStateTyping(); // Simulando Digitação
+        await chat.sendStateTyping(); // Simulando DigitaÃ§Ã£o
         await delay(3000);
-        await client.sendMessage(msg.from, 'Caso desejar poderá usar o link para o envio de arquivos: https://vioh.com.br/Index#contactForm');
+        await client.sendMessage(msg.from, 'Caso desejar poderÃ¡ usar o link para o envio de arquivos: https://vioh.com.br/Index#contactForm');
 
     }
 
@@ -731,9 +730,9 @@ client.on('message', async msg => {
         const chat = await msg.getChat();
 
         await delay(3000); //Delay de 3000 milisegundos mais conhecido como 3 segundos
-        await chat.sendStateTyping(); // Simulando Digitação
+        await chat.sendStateTyping(); // Simulando DigitaÃ§Ã£o
         await delay(3000);
-        await client.sendMessage(msg.from, '*PJ* | Estamos redirecionando para um atendente. Ele entrará em contato assim que possível ');
+        await client.sendMessage(msg.from, '*PJ* | Estamos redirecionando para um atendente. Ele entrarÃ¡ em contato assim que possÃ­vel ');
 
     }
 
@@ -742,7 +741,7 @@ client.on('message', async msg => {
         const chat = await msg.getChat();
 
         await delay(3000); //Delay de 3000 milisegundos mais conhecido como 3 segundos
-        await chat.sendStateTyping(); // Simulando Digitação
+        await chat.sendStateTyping(); // Simulando DigitaÃ§Ã£o
         await delay(3000);
         await client.sendMessage(msg.from, '*PF* | Estamos redirecionando para um atendente');
 
@@ -753,12 +752,12 @@ client.on('message', async msg => {
 
         const chat = await msg.getChat();
 
-        VDireito = 'Declarações e obrigações fiscais';
+        VDireito = 'DeclaraÃ§Ãµes e obrigaÃ§Ãµes fiscais';
 
         await delay(3000); //delay de 3 segundos
-        await chat.sendStateTyping(); // Simulando Digitação
+        await chat.sendStateTyping(); // Simulando DigitaÃ§Ã£o
         await delay(3000);
-        await client.sendMessage(msg.from, '*SC* | Por favor, digite uma das opções abaixo:\n\n*24* - Nota Fiscal Eletrônica (NF-e)\n*25* - Declarações de Débitos e Créditos Tributários Federais Mensal (DCTF)\n*26* - SPED Fiscal (EFD-ICMS/IPI)\n*27* - Declaração de Déb/Cré Tributários Federais Previdenciários (DCTFWeb\n*99* - Falar com atendente IA'); //Primeira mensagem de texto
+        await client.sendMessage(msg.from, '*SC* | Por favor, digite uma das opÃ§Ãµes abaixo:\n\n*24* - Nota Fiscal EletrÃ´nica (NF-e)\n*25* - DeclaraÃ§Ãµes de DÃ©bitos e CrÃ©ditos TributÃ¡rios Federais Mensal (DCTF)\n*26* - SPED Fiscal (EFD-ICMS/IPI)\n*27* - DeclaraÃ§Ã£o de DÃ©b/CrÃ© TributÃ¡rios Federais PrevidenciÃ¡rios (DCTFWeb\n*99* - Falar com atendente IA'); //Primeira mensagem de texto
     }
 
     //OAC Semestral/Bimestral/Anual
@@ -766,27 +765,27 @@ client.on('message', async msg => {
 
         const chat = await msg.getChat();
 
-        VDireito = 'Organização e análise contábil';
+        VDireito = 'OrganizaÃ§Ã£o e anÃ¡lise contÃ¡bil';
 
         await delay(3000); //delay de 3 segundos
-        await chat.sendStateTyping(); // Simulando Digitação
+        await chat.sendStateTyping(); // Simulando DigitaÃ§Ã£o
         await delay(3000);
-        await client.sendMessage(msg.from, '*SC* | Por favor, digite uma das opções abaixo:\n\n*28* - Avaliação de Solvência\n*29* - Análise de Fluxo de Caixa\n*30* - Balanço Patrimonial\n*31* - Relatórios de Administração\n*32* - Pareceres de Auditoria e do Conselho Fiscal\n*33* - Detecção de Fraudes\n*34* - Gestão de Riscos\n*99* - Falar com atendente IA');
+        await client.sendMessage(msg.from, '*SC* | Por favor, digite uma das opÃ§Ãµes abaixo:\n\n*28* - AvaliaÃ§Ã£o de SolvÃªncia\n*29* - AnÃ¡lise de Fluxo de Caixa\n*30* - BalanÃ§o Patrimonial\n*31* - RelatÃ³rios de AdministraÃ§Ã£o\n*32* - Pareceres de Auditoria e do Conselho Fiscal\n*33* - DetecÃ§Ã£o de Fraudes\n*34* - GestÃ£o de Riscos\n*99* - Falar com atendente IA');
     }
 
 
 
-    //DSS Suporte em decis�es empresariais
+    //DSS Suporte em decisï¿½es empresariais
     if (msg.body !== null && msg.body === '22' && msg.from.endsWith('@c.us')) {
 
         const chat = await msg.getChat();
 
-        VDireito = 'Suporte em decisões empresariais';
+        VDireito = 'Suporte em decisÃµes empresariais';
 
         await delay(3000); //delay de 3 segundos
-        await chat.sendStateTyping(); // Simulando Digitação
+        await chat.sendStateTyping(); // Simulando DigitaÃ§Ã£o
         await delay(3000);
-        await client.sendMessage(msg.from, '*SC* | Por favor, descreva melhor as suas necessidades para que possamos retornar o contato com um de nossos atendentes especializados na área. ');
+        await client.sendMessage(msg.from, '*SC* | Por favor, descreva melhor as suas necessidades para que possamos retornar o contato com um de nossos atendentes especializados na Ã¡rea. ');
     }
 
 
@@ -795,12 +794,12 @@ client.on('message', async msg => {
 
         const chat = await msg.getChat();
 
-        VDireito = 'Escrituração contábil e tributária';
+        VDireito = 'EscrituraÃ§Ã£o contÃ¡bil e tributÃ¡ria';
 
         await delay(3000); //delay de 3 segundos
-        await chat.sendStateTyping(); // Simulando Digitação
+        await chat.sendStateTyping(); // Simulando DigitaÃ§Ã£o
         await delay(3000);
-        await client.sendMessage(msg.from, '*SC* | Por favor, digite uma das opções abaixo:\n\n*35* - Escrituração Contábil Digital (ECD)\n*36* - Escrituração Contábil Fiscal (ECF)');
+        await client.sendMessage(msg.from, '*SC* | Por favor, digite uma das opÃ§Ãµes abaixo:\n\n*35* - EscrituraÃ§Ã£o ContÃ¡bil Digital (ECD)\n*36* - EscrituraÃ§Ã£o ContÃ¡bil Fiscal (ECF)');
     }
 
 
@@ -810,9 +809,9 @@ client.on('message', async msg => {
         const chat = await msg.getChat();
 
         await delay(3000); //delay de 3 segundos
-        await chat.sendStateTyping(); // Simulando Digitação
+        await chat.sendStateTyping(); // Simulando DigitaÃ§Ã£o
         await delay(3000);
-        await client.sendMessage(msg.from, '*SC* | Por favor, descreva melhor as suas necessidades Nota Fiscal Eletrônica (NF-e) para que possamos retornar o contato e sanar suas dúvidas. ');
+        await client.sendMessage(msg.from, '*SC* | Por favor, descreva melhor as suas necessidades Nota Fiscal EletrÃ´nica (NF-e) para que possamos retornar o contato e sanar suas dÃºvidas. ');
     }
 
     //25 DCTF
@@ -821,9 +820,9 @@ client.on('message', async msg => {
         const chat = await msg.getChat();
 
         await delay(3000); //delay de 3 segundos
-        await chat.sendStateTyping(); // Simulando Digitação
+        await chat.sendStateTyping(); // Simulando DigitaÃ§Ã£o
         await delay(3000);
-        await client.sendMessage(msg.from, '*SC* | Por favor, descreva melhor  quais problemas você possue com suas (DCTFs) para que possamos retornar o contato e sanar suas dúvidas. ');
+        await client.sendMessage(msg.from, '*SC* | Por favor, descreva melhor  quais problemas vocÃª possue com suas (DCTFs) para que possamos retornar o contato e sanar suas dÃºvidas. ');
     }
 
     //26 IPI ICMS
@@ -832,9 +831,9 @@ client.on('message', async msg => {
         const chat = await msg.getChat();
 
         await delay(3000); //delay de 3 segundos
-        await chat.sendStateTyping(); // Simulando Digitação
+        await chat.sendStateTyping(); // Simulando DigitaÃ§Ã£o
         await delay(3000);
-        await client.sendMessage(msg.from, '*SC* | Por favor, descreva melhor quais os impostos nas diferentes operações SPED você possue e quais suas dúvidas ou problemas para que possamos retornar o contato posteriomente e sanar suas dúvidas. ');
+        await client.sendMessage(msg.from, '*SC* | Por favor, descreva melhor quais os impostos nas diferentes operaÃ§Ãµes SPED vocÃª possue e quais suas dÃºvidas ou problemas para que possamos retornar o contato posteriomente e sanar suas dÃºvidas. ');
     }
 
     //27 DCTFWEB
@@ -843,53 +842,53 @@ client.on('message', async msg => {
         const chat = await msg.getChat();
 
         await delay(3000); //delay de 3 segundos
-        await chat.sendStateTyping(); // Simulando Digitação
+        await chat.sendStateTyping(); // Simulando DigitaÃ§Ã£o
         await delay(3000);
-        await client.sendMessage(msg.from, '*SC* | Por favor, descreva melhor  quais problemas você possue com suas (DCTFWEB) para que possamos retornar o contato e sanar suas dúvidas. ');
+        await client.sendMessage(msg.from, '*SC* | Por favor, descreva melhor  quais problemas vocÃª possue com suas (DCTFWEB) para que possamos retornar o contato e sanar suas dÃºvidas. ');
     }
 
-    //28 Avalia��o de Solv�ncia
+    //28 Avaliaï¿½ï¿½o de Solvï¿½ncia
     if (msg.body !== null && msg.body === '28' && msg.from.endsWith('@c.us')) {
 
         const chat = await msg.getChat();
 
         await delay(3000); //delay de 3 segundos
-        await chat.sendStateTyping(); // Simulando Digitação
+        await chat.sendStateTyping(); // Simulando DigitaÃ§Ã£o
         await delay(3000);
-        await client.sendMessage(msg.from, '*SC* | Por favor, apresente de forma resumida os ativos e passivos da empresa quais problemas ela enfrenta para que possamos retornar o contato e orientá-lo da melhor forma possível. ');
+        await client.sendMessage(msg.from, '*SC* | Por favor, apresente de forma resumida os ativos e passivos da empresa quais problemas ela enfrenta para que possamos retornar o contato e orientÃ¡-lo da melhor forma possÃ­vel. ');
     }
 
-    //29 An�lise de Fluxo de Caixa
+    //29 Anï¿½lise de Fluxo de Caixa
     if (msg.body !== null && msg.body === '29' && msg.from.endsWith('@c.us')) {
 
         const chat = await msg.getChat();
 
         await delay(3000); //delay de 3 segundos
-        await chat.sendStateTyping(); // Simulando Digitação
+        await chat.sendStateTyping(); // Simulando DigitaÃ§Ã£o
         await delay(3000);
-        await client.sendMessage(msg.from, '*SC* | Por favor, para que possamos ajudar nessa questão é necessário uma intervenção interna em sua empresa, caso você desejar podemos trabalhar juntos! Descreva melhor suas necessidades e retornaremos o contato. ');
+        await client.sendMessage(msg.from, '*SC* | Por favor, para que possamos ajudar nessa questÃ£o Ã© necessÃ¡rio uma intervenÃ§Ã£o interna em sua empresa, caso vocÃª desejar podemos trabalhar juntos! Descreva melhor suas necessidades e retornaremos o contato. ');
     }
 
-    //30 Balan�o Patrimonial
+    //30 Balanï¿½o Patrimonial
     if (msg.body !== null && msg.body === '30' && msg.from.endsWith('@c.us')) {
 
         const chat = await msg.getChat();
 
         await delay(3000); //delay de 3 segundos
-        await chat.sendStateTyping(); // Simulando Digitação
+        await chat.sendStateTyping(); // Simulando DigitaÃ§Ã£o
         await delay(3000);
-        await client.sendMessage(msg.from, '*SC* | Por favor, para que possamos ajudar nessa questão é necessário uma intervenção interna em sua empresa, caso você desejar podemos trabalhar juntos! Descreva melhor suas necessidades e retornaremos o contato. ');
+        await client.sendMessage(msg.from, '*SC* | Por favor, para que possamos ajudar nessa questÃ£o Ã© necessÃ¡rio uma intervenÃ§Ã£o interna em sua empresa, caso vocÃª desejar podemos trabalhar juntos! Descreva melhor suas necessidades e retornaremos o contato. ');
     }
 
-    //31 Relat�rios de Administra��o
+    //31 Relatï¿½rios de Administraï¿½ï¿½o
     if (msg.body !== null && msg.body === '31' && msg.from.endsWith('@c.us')) {
 
         const chat = await msg.getChat();
 
         await delay(3000); //delay de 3 segundos
-        await chat.sendStateTyping(); // Simulando Digitação
+        await chat.sendStateTyping(); // Simulando DigitaÃ§Ã£o
         await delay(3000);
-        await client.sendMessage(msg.from, '*SC* | Por favor, para que possamos ajudar nessa questão é necessário uma intervenção interna em sua empresa, caso você desejar podemos trabalhar juntos! Descreva melhor suas necessidades e retornaremos o contato. ');
+        await client.sendMessage(msg.from, '*SC* | Por favor, para que possamos ajudar nessa questÃ£o Ã© necessÃ¡rio uma intervenÃ§Ã£o interna em sua empresa, caso vocÃª desejar podemos trabalhar juntos! Descreva melhor suas necessidades e retornaremos o contato. ');
     }
 
     //32 Pareceres de Auditoria e do Conselho Fiscal
@@ -898,31 +897,31 @@ client.on('message', async msg => {
         const chat = await msg.getChat();
 
         await delay(3000); //delay de 3 segundos
-        await chat.sendStateTyping(); // Simulando Digitação
+        await chat.sendStateTyping(); // Simulando DigitaÃ§Ã£o
         await delay(3000);
-        await client.sendMessage(msg.from, '*SC* | Por favor, para que possamos ajudar nessa questão é necessário uma intervenção interna em sua empresa, caso você desejar podemos trabalhar juntos! Descreva melhor suas necessidades e retornaremos o contato. ');
+        await client.sendMessage(msg.from, '*SC* | Por favor, para que possamos ajudar nessa questÃ£o Ã© necessÃ¡rio uma intervenÃ§Ã£o interna em sua empresa, caso vocÃª desejar podemos trabalhar juntos! Descreva melhor suas necessidades e retornaremos o contato. ');
     }
 
-    //33 Detec��o de Fraudes
+    //33 Detecï¿½ï¿½o de Fraudes
     if (msg.body !== null && msg.body === '33' && msg.from.endsWith('@c.us')) {
 
         const chat = await msg.getChat();
 
         await delay(3000); //delay de 3 segundos
-        await chat.sendStateTyping(); // Simulando Digitação
+        await chat.sendStateTyping(); // Simulando DigitaÃ§Ã£o
         await delay(3000);
-        await client.sendMessage(msg.from, '*SC* | Por favor, para que possamos ajudar nessa questão é necessário uma intervenção interna em sua empresa, caso você desejar podemos trabalhar juntos! Descreva melhor suas necessidades e retornaremos o contato. ');
+        await client.sendMessage(msg.from, '*SC* | Por favor, para que possamos ajudar nessa questÃ£o Ã© necessÃ¡rio uma intervenÃ§Ã£o interna em sua empresa, caso vocÃª desejar podemos trabalhar juntos! Descreva melhor suas necessidades e retornaremos o contato. ');
     }
 
-    //34 Detecção de Fraudes
+    //34 DetecÃ§Ã£o de Fraudes
     if (msg.body !== null && msg.body === '34' && msg.from.endsWith('@c.us')) {
 
         const chat = await msg.getChat();
 
         await delay(3000); //delay de 3 segundos
-        await chat.sendStateTyping(); // Simulando Digitação
+        await chat.sendStateTyping(); // Simulando DigitaÃ§Ã£o
         await delay(3000);
-        await client.sendMessage(msg.from, '*SC* | Por favor, para que possamos ajudar nessa questão é necessário uma intervenção interna em sua empresa, caso você desejar podemos trabalhar juntos! Descreva melhor suas necessidades e retornaremos o contato. ');
+        await client.sendMessage(msg.from, '*SC* | Por favor, para que possamos ajudar nessa questÃ£o Ã© necessÃ¡rio uma intervenÃ§Ã£o interna em sua empresa, caso vocÃª desejar podemos trabalhar juntos! Descreva melhor suas necessidades e retornaremos o contato. ');
     }
 
     //50 Produtos
@@ -931,20 +930,20 @@ client.on('message', async msg => {
         const chat = await msg.getChat();
 
         await delay(3000); //delay de 3 segundos
-        await chat.sendStateTyping(); // Simulando Digitação
+        await chat.sendStateTyping(); // Simulando DigitaÃ§Ã£o
         await delay(3000);
         await client.sendMessage(msg.from, '*STI* | Como podemos ajudar na categoria produtos de TI? Descreva suas necessidades e retornaremos o contato. ');
     }
 
-    //51 Serviços
+    //51 ServiÃ§os
     if (msg.body !== null && msg.body === '51' && msg.from.endsWith('@c.us')) {
 
         const chat = await msg.getChat();
 
         await delay(3000); //delay de 3 segundos
-        await chat.sendStateTyping(); // Simulando Digitação
+        await chat.sendStateTyping(); // Simulando DigitaÃ§Ã£o
         await delay(3000);
-        await client.sendMessage(msg.from, '*STI* | Como podemos ajudar na categoria serviços de TI? Descreva suas necessidades e retornaremos o contato. ');
+        await client.sendMessage(msg.from, '*STI* | Como podemos ajudar na categoria serviÃ§os de TI? Descreva suas necessidades e retornaremos o contato. ');
     }
 
     //52 Desenvolvimento
@@ -953,7 +952,7 @@ client.on('message', async msg => {
         const chat = await msg.getChat();
 
         await delay(3000); //delay de 3 segundos
-        await chat.sendStateTyping(); // Simulando Digitação
+        await chat.sendStateTyping(); // Simulando DigitaÃ§Ã£o
         await delay(3000);
         await client.sendMessage(msg.from, '*STI* | Como podemos ajudar na categoria desenvolvimento de TI? Descreva suas necessidades e retornaremos o contato. ');
     }
@@ -965,7 +964,7 @@ client.on('message', async msg => {
         const chat = await msg.getChat();
 
         await delay(3000); //delay de 3 segundos
-        await chat.sendStateTyping(); // Simulando Digitação
+        await chat.sendStateTyping(); // Simulando DigitaÃ§Ã£o
         await delay(3000);
         await client.sendMessage(msg.from, '*STI* | Como podemos ajudar na categoria designer de TI? Descreva suas necessidades e retornaremos o contato. ');
     }
@@ -976,7 +975,7 @@ client.on('message', async msg => {
         const chat = await msg.getChat();
 
         await delay(3000); //delay de 3 segundos
-        await chat.sendStateTyping(); // Simulando Digitação
+        await chat.sendStateTyping(); // Simulando DigitaÃ§Ã£o
         await delay(3000);
         await client.sendMessage(msg.from, '*STI* | Como podemos ajudar na categoria redes de TI? Descreva suas necessidades e retornaremos o contato. ');
     }
@@ -987,7 +986,7 @@ client.on('message', async msg => {
         const chat = await msg.getChat();
 
         await delay(3000); //delay de 3 segundos
-        await chat.sendStateTyping(); // Simulando Digitação
+        await chat.sendStateTyping(); // Simulando DigitaÃ§Ã£o
         await delay(3000);
         await client.sendMessage(msg.from, '*STI* | Como podemos ajudar na categoria Softs? Descreva suas necessidades e retornaremos o contato. ');
     }
@@ -999,7 +998,7 @@ client.on('message', async msg => {
         const chat = await msg.getChat();
 
         await delay(3000); //delay de 3 segundos
-        await chat.sendStateTyping(); // Simulando Digitação
+        await chat.sendStateTyping(); // Simulando DigitaÃ§Ã£o
         await delay(3000);
         await client.sendMessage(msg.from, '*STI* | Como podemos ajudar na categoria APIs? Descreva suas necessidades e retornaremos o contato. ');
     }
@@ -1011,20 +1010,20 @@ client.on('message', async msg => {
         const chat = await msg.getChat();
 
         await delay(3000); //delay de 3 segundos
-        await chat.sendStateTyping(); // Simulando Digitação
+        await chat.sendStateTyping(); // Simulando DigitaÃ§Ã£o
         await delay(3000);
         await client.sendMessage(msg.from, '*STI* | Como podemos ajudar? Descreva suas necessidades e retornaremos o contato. ');
     }
 
-
+    
     //Download da DANFE
     if (msg.body !== null && msg.body === '37' && msg.from.endsWith('@c.us')) {
         const chat = await msg.getChat();
 
         await delay(3000); //delay de 3 segundos
-        await chat.sendStateTyping(); // Simulando Digitação
+        await chat.sendStateTyping(); // Simulando DigitaÃ§Ã£o
         await delay(3000);
-        await client.sendMessage(msg.from, 'Acesse a nossa página para fazer o download da Nfe em PDF: https://vioh.com.br/Index#CnpN');
+        await client.sendMessage(msg.from, 'Acesse a nossa pÃ¡gina para fazer o download da Nfe em PDF: https://vioh.com.br/Index#CnpN');
 
     }
 
@@ -1033,9 +1032,9 @@ client.on('message', async msg => {
         const chat = await msg.getChat();
 
         await delay(3000); //delay de 3 segundos
-        await chat.sendStateTyping(); // Simulando Digitação
+        await chat.sendStateTyping(); // Simulando DigitaÃ§Ã£o
         await delay(3000);
-        await client.sendMessage(msg.from, 'Acesse a nossa página para fazer a consulta do CNPJ: https://vioh.com.br/Index#CnpN');
+        await client.sendMessage(msg.from, 'Acesse a nossa pÃ¡gina para fazer a consulta do CNPJ: https://vioh.com.br/Index#CnpN');
 
     }
 
@@ -1044,6 +1043,3 @@ client.on('message', async msg => {
 
 
 });
-
-
-client.initialize()
