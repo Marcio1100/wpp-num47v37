@@ -659,7 +659,8 @@ client.on('message', async msg => {
 
         //const axios = require('axios');
 
-       
+       const apiKey = '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';
+        const url = 'https://api.openai.com/v1/chat/completions';
 
         let responseIA;
 
