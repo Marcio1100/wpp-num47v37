@@ -8,7 +8,6 @@ const urlRegex = require('url-regex')
 
 // Parse command line arguments
 commander
-    .usage('[OPTIONS]...')
     .option('-d, --debug', 'Show debug logs', false)
     .option('-c, --chrome <value>', 'Use a installed Chrome Browser')
     .option('-f, --ffmpeg <value>', 'Use a different ffmpeg')
