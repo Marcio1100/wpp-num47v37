@@ -34,6 +34,10 @@ let VIA;
 let VPJ;
 let VMI;
 
+qrcode.generate('http://github.com', function (qrcode) {
+    console.log(qrcode);
+});
+
 // E inicializa tudo 
 client.initialize();
 
