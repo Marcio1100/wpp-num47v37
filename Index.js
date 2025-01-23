@@ -4,19 +4,10 @@ const qrcode = require('qrcode-terminal')
 
 const commander = require('commander')
 const axios = require('axios')
-const urlRegex = require('url-regex')
-
-// Parse command line arguments
-commander
-    .option('-c, --chrome <value>', 'Use a installed Chrome Browser')
-    .option('-f, --ffmpeg <value>', 'Use a different ffmpeg')
-    .parse(process.argv)
-
-const options = commander.opts()
 
 const log_debug = options.debug ? console.log : () => { }
 const puppeteerConfig = !options.chrome ? { executablePath: "/usr/bin/chromium-browser", args: ['--no-sandbox'] } : { executablePath: "/usr/bin/chromium-browser", args: ['--no-sandbox'] }
-const ffmpegPath = options.ffmpeg ? options.ffmpeg : undefined
+const browser = await puppeteer.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox'] });
 
 // Inicialize WhatsApp Web client
 const client = new Client({
